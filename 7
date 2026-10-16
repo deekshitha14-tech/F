@@ -1,0 +1,67 @@
+import { Component } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  imports: [ReactiveFormsModule],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  contactForm: any;
+
+  constructor(private fb: FormBuilder) {
+    this.contactForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
+      subject: ['', Validators.required],
+      message: ['', [Validators.required, Validators.minLength(10)]]
+    });
+  }
+
+  submit() {
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+      alert('Form submitted successfully!');
+  }
+}
+<h2>Contact Form</h2>
+
+<form [formGroup]="contactForm" (ngSubmit)="submit()">
+
+<label>Name:</label>
+<input formControlName="name">
+<small [hidden]="contactForm.controls.name.valid || !contactForm.controls.name.touched">
+Name is required
+</small>
+
+<label>Email:</label>
+<input formControlName="email">
+<small [hidden]="contactForm.controls.email.valid || !contactForm.controls.email.touched">
+Enter valid email
+</small>
+
+<label>Phone:</label>
+<input formControlName="phone">
+<small [hidden]="contactForm.controls.phone.valid || !contactForm.controls.phone.touched">
+Enter 10-digit phone
+</small>
+
+<label>Subject:</label>
+<input formControlName="subject">
+<small [hidden]="contactForm.controls.subject.valid || !contactForm.controls.subject.touched">
+Subject is required
+</small>
+
+<label>Message:</label>
+<textarea formControlName="message"></textarea>
+<small [hidden]="contactForm.controls.message.valid || !contactForm.controls.message.touched">
+Message is required
+</small>
+
+<button type="submit">Submit</button>
+
+</form>
