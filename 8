@@ -1,0 +1,59 @@
+const express=require('express');
+const app=express();
+const PORT=3000;
+app.use(express.json());
+let students=[
+  {id:1,name:"deekshitha",marks:"90"},
+  {id:2,name:"sai",marks:"80"},
+  {id:3,name:"fi",marks:"40"},
+  {id:4,name:"keer",marks:"60"},
+  {id:5,name:"min",marks:"30"},
+]
+app.get('/students',(req,res)=>{
+  res.json(students);
+});
+app.get("/students/:id",(req,res)=>{
+  const s=students.find(x=>x.id==req.params.id);
+  if(!s){
+    res.status(404).send("student not found");
+  }
+  res.json(s);
+});
+app.post("/students",(req,res)=>{
+  const s={
+    id:students.length+1,
+    name:req.body.name,
+    marks:req.body.marks
+  };
+  students.push(s);
+  res.json(s);
+});
+app.put("/students/:id",(req,res)=>{
+  const s=students.find(x=>x.id==req.params.id);
+  if(!s){
+    res.status(404).json({message:"student not found"});
+  }
+  s.name=req.body.name;
+  s.marks=req.body.marks;
+  res.json({message:"marks updated successfully",student:s});
+});
+app.delete("/students/:id",(req,res)=>{
+  const i=students.findIndex(x=>x.id==req.params.id);
+  if(i==-1){
+    res.status(404).send("student not found");
+  }
+  res.json(students.splice(i,1));
+});
+app.get("/result/total",(req,res)=>{
+  res.json({totalStudents:students.length});
+});
+app.get("/result/failed",(req,res)=>{
+  const failed=students.filter(x=>x.marks<40);
+  res.json({failed:failed.length,students:failed});
+});
+app.get("/",(req,res)=>{
+  res.send("welcome to student management system");
+});
+app.listen(PORT,()=>{
+  console.log(`server  at http://localhost:${PORT}`);
+});
