@@ -1,0 +1,100 @@
+const { MongoClient }=require("mongodb");
+async function main(){
+const client =  new MongoClient("mongodb://127.0.0.1:27017");
+try{
+  await client.connect();
+  console.log("connected to mongodb succesfully");
+  const db=client.db("StudentDB" );
+  const students=db.collection("students");
+  await students.deleteMany({});
+  await students.insertMany([
+    {
+    _id:1,
+    name:"aisha",
+    cgpa:9,
+    attendance:70,
+    marks:{dbms:80,os:90,maths:95}
+  },
+  {_id:2,
+    name:"ali",
+    cgpa:8,
+    attendance:80,
+    marks:{dbms:70,os:80,maths:85}
+  },
+  {_id:3,
+    name:"ahmed",
+    cgpa:7,
+    attendance:60,
+    marks:{dbms:60,os:70,maths:75}
+},
+{_id:4,
+    name:"fatima",
+    cgpa:6,
+    attendance:90,
+    marks:{dbms:50,os:60,maths:65}
+}]);
+console.log("STUDENT REPORT");
+const result=await students.aggregate([
+  {$project:{
+    _id:0,
+    name:1,
+    cgpa:1,
+    attendance:1,
+    total_marks:{$add:["$marks.dbms","$marks.os","$marks.maths"]},
+    average_marks:{$round:[{$avg:["$marks.dbms","$marks.os","$marks.maths"]},2]},}},
+  {$addFields:{
+    grade:{
+      $switch:{
+        branches:[
+          {case:{$gte:["$average_marks",90]},then:"A+"},
+          {case:{$gte:["$average_marks",80]},then:"A"},
+          {case:{$gte:["$average_marks",70]},then:"B"},
+          {case:{$gte:["$average_marks",60]},then:"C"},
+        ],
+      default:"F"}},
+attendance_status:{
+  $cond:[
+    {$gte:["$attendance",75]},
+    "eligible ",
+    "not eligible "]
+  },
+  gpa_status:{
+    $cond:[
+    {$gte:["$cgpa",7]},
+    "eligible ",
+    "not eligible"]
+   } }},
+{$sort: 
+    {total_marks:-1}}
+]).toArray();
+console.table(result);
+}catch(error){
+  console.error(error.message);
+}finally{
+  await client.close();
+}}
+main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
