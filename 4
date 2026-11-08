@@ -1,0 +1,88 @@
+async function getWeather(){
+    let city=document.getElementById("city").value;
+    let result=document.getElementById("result");
+    if(city===""){
+        result.innerHTML="Please enter a city name";
+        return;
+    }
+    try{
+        let response=await fetch(
+            "https://geocoding-api.open-meteo.com/v1/search?name="+city+"&count=1"
+        );
+        let data=await response.json();
+        if(!data.results){
+            result.innerHTML="City not found";
+            return;
+        }
+        let lat=data.results[0].latitude;
+        let lon=data.results[0].longitude;
+        let weather=await fetch(
+            "https://api.open-meteo.com/v1/forecast?latitude="+lat+
+            "&longitude="+lon+
+            "&current=temperature_2m,relative_humidity_2m,wind_speed_10m"+
+            "&daily=temperature_2m_max,temperature_2m_min"+
+            "&past_days=5&forecast_days=1&timezone=auto"
+        );
+        let wdata=await weather.json();
+        let output="<h3>"+data.results[0].name+"</h3>";
+        output+="<h3>Current Weather</h3>";
+        output+="Temperature: "+wdata.current.temperature_2m+" °C<br>";
+        output+="Humidity: "+wdata.current.relative_humidity_2m+" %<br>";
+        output+="Wind Speed: "+wdata.current.wind_speed_10m+" km/h";
+        output+="<h3>Past 5 Days Weather</h3>";
+        for(let i=0;i<5;i++){
+            output+="<p><b>"+wdata.daily.time[i]+"</b><br>"+
+            "Max Temperature: "+wdata.daily.temperature_2m_max[i]+" °C<br>"+
+            "Min Temperature: "+wdata.daily.temperature_2m_min[i]+" °C</p>";
+        }
+        result.innerHTML=output;
+    }
+    catch(error){
+        result.innerHTML="Unable to get weather data";
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Weather Forecast</h2>
+        <input type="text" id="city" placeholder="Enter city name">
+        <button onclick="getWeather()">Search</button>
+        <div id="result"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+body{
+    font-family:Arial,sans-serif;
+    background:lightblue;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.container{
+    background:white;
+    padding:25px;
+    width:320px;
+    text-align:center;
+    border-radius:10px;
+    box-shadow:0 0 10px gray;
+}
+input{
+    padding:10px;
+    width:85%;
+    margin:10px;
+}
+button{
+    padding:10px 20px;
+    background:blue;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
