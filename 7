@@ -1,67 +1,44 @@
-import { Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-root',
-  imports: [ReactiveFormsModule],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [FormsModule, CommonModule],
+  template: `
+    <h2>Contact Form</h2>
+    <form #f="ngForm" (ngSubmit)="submit(f.value)">
+      <input name="name" ngModel #n="ngModel"
+        placeholder="Name" required minlength="3">
+      <small *ngIf="n.invalid && n.touched">Enter valid name</small><br><br>
+      <input name="email" ngModel #e="ngModel"
+        type="email" placeholder="Email" required email>
+      <small *ngIf="e.invalid && e.touched">Enter valid email</small><br><br>
+      <input name="phone" ngModel #p="ngModel"
+        placeholder="Phone" required pattern="[0-9]{10}">
+      <small *ngIf="p.invalid && p.touched">Enter valid phone number</small><br><br>
+      <textarea name="message" ngModel #m="ngModel"
+        placeholder="Message" required maxlength="100"></textarea>
+      <small *ngIf="m.invalid && m.touched">Enter valid message</small><br><br>
+      <button [disabled]="f.invalid">Submit</button>
+    </form>
+  `,
+  styles: [`
+    input, textarea {
+      padding: 10px;
+      border: 1px solid black;
+      border-radius: 5px;
+      width: 250px;
+    }
+    small {
+      color: red;
+    }
+  `]
 })
 export class App {
-  contactForm: any;
-
-  constructor(private fb: FormBuilder) {
-    this.contactForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
-      subject: ['', Validators.required],
-      message: ['', [Validators.required, Validators.minLength(10)]]
-    });
-  }
-
-  submit() {
-    if (this.contactForm.invalid) {
-      this.contactForm.markAllAsTouched();
-      return;
-    }
-      alert('Form submitted successfully!');
+  submit(data: any) {
+    console.log(data);
+    alert('Submitted Successfully!');
   }
 }
-<h2>Contact Form</h2>
-
-<form [formGroup]="contactForm" (ngSubmit)="submit()">
-
-<label>Name:</label>
-<input formControlName="name">
-<small [hidden]="contactForm.controls.name.valid || !contactForm.controls.name.touched">
-Name is required
-</small>
-
-<label>Email:</label>
-<input formControlName="email">
-<small [hidden]="contactForm.controls.email.valid || !contactForm.controls.email.touched">
-Enter valid email
-</small>
-
-<label>Phone:</label>
-<input formControlName="phone">
-<small [hidden]="contactForm.controls.phone.valid || !contactForm.controls.phone.touched">
-Enter 10-digit phone
-</small>
-
-<label>Subject:</label>
-<input formControlName="subject">
-<small [hidden]="contactForm.controls.subject.valid || !contactForm.controls.subject.touched">
-Subject is required
-</small>
-
-<label>Message:</label>
-<textarea formControlName="message"></textarea>
-<small [hidden]="contactForm.controls.message.valid || !contactForm.controls.message.touched">
-Message is required
-</small>
-
-<button type="submit">Submit</button>
-
-</form>
