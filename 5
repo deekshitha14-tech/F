@@ -1,17 +1,13 @@
 import { Routes, Route, Link } from "react-router-dom";
-
 function Home() {
   return( <div><h1>Home Page</h1><p>Welcome to my website!</p></div> );
 }
-
 function About() {
   return <div><h1>About Page</h1><p>This is about us.</p></div>;
 }
-
 function Contact() {
   return <div><h1>Contact Page</h1><p>Contact us at example@gmail.com</p></div>;
 }
-
 function App() {
   return (
     <>
@@ -37,9 +33,29 @@ import ReactDOM from 'react-dom/client'
 import{BrowserRouter} from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
   </BrowserRouter>
 );
+body {
+  font-family: Arial;
+  background: white;
+}
+nav {
+  background: pink;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+nav a {
+  color: white;
+}
+nav a:hover {
+  color: skyblue;
+}
+h1, p {
+  margin: 25px;
+}
+
