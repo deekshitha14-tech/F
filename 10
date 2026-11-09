@@ -1,0 +1,99 @@
+app.component.ts
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html'
+})
+export class AppComponent {
+
+  contactForm = new FormGroup({
+    name: new FormControl('', Validators.required),
+
+  email: new FormControl('', [
+  Validators.required,
+  Validators.pattern('^[a-zA-Z0-9._%+-]+@gmail\\.com$')
+]),
+     phone: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[0-9]{10}$')
+    ]),
+
+
+    subject: new FormControl('', Validators.required),
+
+    message: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10)
+    ])
+  });
+
+  onSubmit() {
+    if (this.contactForm.valid) {
+      alert('Form Submitted Successfully');
+      console.log(this.contactForm.value);
+    } else {
+      this.contactForm.markAllAsTouched();
+    }
+  }
+}
+app.component.html
+<h1>Contact Form</h1>
+
+<form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+
+  <label>Name</label>
+  <input type="text" formControlName="name">
+  <p *ngIf="contactForm.controls.name.touched && contactForm.controls.name.invalid">
+    Name is required.
+  </p>
+  <br><br>
+
+  <label>Email</label>
+  <input type="email" formControlName="email">
+
+  <p *ngIf="contactForm.controls.email.touched && contactForm.controls.email.hasError('required')">
+  Email is required.
+</p>
+
+<p *ngIf="contactForm.controls.email.touched && contactForm.controls.email.hasError('pattern')">
+  Enter a valid email address.
+</p>
+  <br><br>
+ <label>Phone Number</label>
+  <input type="tel" formControlName="phone">
+
+  <p *ngIf="contactForm.controls.phone.touched && contactForm.controls.phone.hasError('required')">
+    Phone number is required.
+  </p>
+
+  <p *ngIf="contactForm.controls.phone.touched && contactForm.controls.phone.hasError('pattern')">
+    Enter a valid 10-digit phone number.
+  </p>
+  <br><br>
+
+
+  <label>Subject</label>
+  <input type="text" formControlName="subject">
+
+  <p *ngIf="contactForm.controls.subject.touched && contactForm.controls.subject.invalid">
+    Subject is required.
+  </p>
+  <br><br>
+
+
+  <label>Message</label>
+  <textarea formControlName="message"></textarea>
+
+  <p *ngIf="contactForm.controls.message.touched && contactForm.controls.message.hasError('required')">
+    Message is required.
+  </p>
+
+  <p *ngIf="contactForm.controls.message.touched && contactForm.controls.message.hasError('minlength')">
+    Message must contain at least 10 characters.
+  </p>
+
+  <button type="submit">Submit</button>
+
+</form>
